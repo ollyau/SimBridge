@@ -91,6 +91,7 @@
     <Compile Include="Log.cs" />
     <Compile Include="FlightSimulator.cs" />
     <Compile Include="MessageProvider.cs" />
+    <Compile Include="MockSimulatorImpl.cs" />
     <Compile Include="MQTTMessageProvider.cs" />
     <Compile Include="NNumber.cs" />
     <Compile Include="Settings.cs" />

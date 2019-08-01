@@ -104,11 +104,9 @@ namespace SimBridge
 
             if (e.Topic.StartsWith("pair"))
             {
-                Log.Instance.Debug($"Pairing message received");
-
                 // read json to get identifier
                 var data = JObject.Parse(Encoding.UTF8.GetString(e.Payload));
-                UserIdentifier = data["user"].ToObject<string>();
+                UserIdentifier = data["data"].ToObject<string>();
 
                 // save settings for future use
                 Configuration.Set("user_identifier", UserIdentifier);
@@ -121,7 +119,6 @@ namespace SimBridge
             }
             else if (e.Topic.StartsWith(UserIdentifier))
             {
-                Log.Instance.Debug($"Routing message to flight sim");
                 var data = Encoding.UTF8.GetString(e.Payload);
                 RouteMessage(JsonMessage.Parse(data));
             }

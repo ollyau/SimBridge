@@ -32,10 +32,12 @@ namespace SimBridge
 
             var cfg = new Settings("settings.json");
 
-            var fs = new FlightSimulator();
-            fs.Initialize();
+            //var fs = new FlightSimulator();
+            //fs.Initialize();
 
-            var mqtt = new MQTTMessageProvider(fs);
+            var sim = new MockSimulatorImpl();
+
+            var mqtt = new MQTTMessageProvider(sim);
             Task.Run(() => mqtt.Initialize(cfg));
         }
     }
