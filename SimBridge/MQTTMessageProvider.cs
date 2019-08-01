@@ -27,11 +27,21 @@ namespace SimBridge
 
     class MQTTMessageProvider : MessageProvider
     {
-        public readonly string PairingKey;
         private string UserIdentifier;
         private string TopicPrefix;
 
-        public MQTTMessageState State { get; private set; }
+        private string _pairingKey;
+        public string PairingKey
+        {
+            get { return _pairingKey; }
+            private set { SetField(ref _pairingKey, value); }
+        }
+
+        private MQTTMessageState _state;
+        public MQTTMessageState State {
+            get { return _state; }
+            private set { SetField(ref _state, value); }
+        }
 
         Settings Configuration;
         IMqttClient MQTTClient;

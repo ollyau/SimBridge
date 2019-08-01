@@ -41,7 +41,7 @@ namespace SimBridge
 
     //-----------------------------------------------------------------------------
 
-    abstract class MessageProvider
+    abstract class MessageProvider : ObservableObject
     {
         protected ISimulator Simulator;
 

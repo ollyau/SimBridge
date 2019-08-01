@@ -100,16 +100,13 @@ namespace SimBridge
 
         public FlightSimulator() : base("SimBridge")
         {
-            Client.OnRecvOpen += OnRecvOpen;
-            Client.OnRecvQuit += OnRecvQuit;
             Client.OnRecvException += OnRecvException;
         }
 
-        private void OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
+        protected override void OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
-            var simVersion = $"{data.dwApplicationVersionMajor}.{data.dwApplicationVersionMinor}.{data.dwApplicationBuildMajor}.{data.dwApplicationBuildMinor}";
-            var scVersion = $"{data.dwSimConnectVersionMajor}.{data.dwSimConnectVersionMinor}.{data.dwSimConnectBuildMajor}.{data.dwSimConnectBuildMinor}";
-            Log.Instance.Info($"Connected to {data.szApplicationName}\r\n    Simulator Version:\t{simVersion}\r\n    SimConnect Version:\t{scVersion}");
+            // call parent class for default behavior
+            base.OnRecvOpen(sender, data);
 
             // this requires all Events enum entries to match their appropriate SimConnect event ID name
             var eventNames = Enum.GetNames(typeof(Events));
@@ -119,11 +116,6 @@ namespace SimBridge
                 Log.Instance.Debug($"Mapping event: {eventNames[i]}");
                 Client.MapClientEventToSimEvent(eventValues[i], eventNames[i]);
             }
-        }
-
-        private void OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
-        {
-            Log.Instance.Info("Flight Simulator disconnected.");
         }
 
         private void OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)

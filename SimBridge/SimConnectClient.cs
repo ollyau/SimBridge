@@ -7,15 +7,31 @@ using System.Threading.Tasks;
 
 namespace SimBridge
 {
-    abstract class SimConnectClient
+    abstract class SimConnectClient : ObservableObject
     {
         protected readonly string ApplicationName;
         protected SimConnect Client;
+
+        private bool _connected;
+        public bool Connected
+        {
+            get { return _connected; }
+            private set { SetField(ref _connected, value); }
+        }
+
+        private string _simName;
+        public string SimulatorName
+        {
+            get { return _simName; }
+            private set { SetField(ref _simName, value); }
+        }
 
         public SimConnectClient(string ApplicationName)
         {
             this.ApplicationName = ApplicationName;
             Client = new SimConnect();
+            Client.OnRecvOpen += OnRecvOpen;
+            Client.OnRecvQuit += OnRecvQuit;
         }
 
         ~SimConnectClient() { }
@@ -111,6 +127,23 @@ namespace SimBridge
         private void CloseConnection()
         {
             Client.Close();
+        }
+
+        //-----------------------------------------------------------------------------
+
+        protected virtual void OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
+        {
+            Connected = true;
+            SimulatorName = data.szApplicationName;
+            var simVersion = $"{data.dwApplicationVersionMajor}.{data.dwApplicationVersionMinor}.{data.dwApplicationBuildMajor}.{data.dwApplicationBuildMinor}";
+            var scVersion = $"{data.dwSimConnectVersionMajor}.{data.dwSimConnectVersionMinor}.{data.dwSimConnectBuildMajor}.{data.dwSimConnectBuildMinor}";
+            Log.Instance.Info($"Connected to {data.szApplicationName}\r\n    Simulator Version:\t{simVersion}\r\n    SimConnect Version:\t{scVersion}");
+        }
+
+        protected virtual void OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
+        {
+            Connected = false;
+            Log.Instance.Info("Flight Simulator disconnected.");
         }
 
         //-----------------------------------------------------------------------------

@@ -23,22 +23,7 @@ namespace SimBridge
         public MainWindow()
         {
             InitializeComponent();
-
-            //for (var i = 0; i < 20; i++)
-            //{
-            //    var tailnumber = NNumber.Generate();
-            //    Log.Instance.Debug($"{tailnumber}: {NNumber.Phonetic(tailnumber)}");
-            //}
-
-            var cfg = new Settings("settings.json");
-
-            //var fs = new FlightSimulator();
-            //fs.Initialize();
-
-            var sim = new MockSimulatorImpl();
-
-            var mqtt = new MQTTMessageProvider(sim);
-            Task.Run(() => mqtt.Initialize(cfg));
+            DataContext = new ViewModel();
         }
     }
 }

@@ -94,8 +94,10 @@
     <Compile Include="MockSimulatorImpl.cs" />
     <Compile Include="MQTTMessageProvider.cs" />
     <Compile Include="NNumber.cs" />
+    <Compile Include="ObservableObject.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SimConnectClient.cs" />
+    <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
