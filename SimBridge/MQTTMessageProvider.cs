@@ -29,6 +29,8 @@ namespace SimBridge
     {
         public readonly string PairingKey;
         private string UserIdentifier;
+        private string TopicPrefix;
+
         public MQTTMessageState State { get; private set; }
 
         Settings Configuration;
@@ -45,6 +47,7 @@ namespace SimBridge
             this.Configuration = Configuration;
 
             UserIdentifier = Configuration.Get<string>("user_identifier", null);
+            TopicPrefix = Configuration.Get<string>("mqtt_topic_prefix", null);
 
             var server = Configuration.Get<string>("mqtt_server");
             var username = Configuration.Get<string>("mqtt_username", null);
@@ -78,13 +81,17 @@ namespace SimBridge
                 if (!string.IsNullOrWhiteSpace(UserIdentifier))
                 {
                     Log.Instance.Info($"Subscribing to events for user identifier {UserIdentifier}");
-                    await MQTTClient.SubscribeAsync(new TopicFilterBuilder().WithTopic($"{UserIdentifier}/event").Build());
+                    await MQTTClient.SubscribeAsync(new TopicFilterBuilder().WithTopic(
+                        string.IsNullOrWhiteSpace(TopicPrefix) ? $"{UserIdentifier}/event" : $"{TopicPrefix}/{UserIdentifier}/event"
+                        ).Build());
                     State = MQTTMessageState.Listening;
                 }
                 else
                 {
                     Log.Instance.Info($"No user identifier provided; subscribing to pairing events with pairing key {PairingKey}");
-                    await MQTTClient.SubscribeAsync(new TopicFilterBuilder().WithTopic($"pair/{PairingKey}").Build());
+                    await MQTTClient.SubscribeAsync(new TopicFilterBuilder().WithTopic(
+                        string.IsNullOrWhiteSpace(TopicPrefix) ? $"pair/{PairingKey}" : $"{TopicPrefix}/pair/{PairingKey}"
+                        ).Build());
                     State = MQTTMessageState.Pairing;
                 }
             } );
@@ -114,7 +121,9 @@ namespace SimBridge
 
                 // subscribe to messages
                 Log.Instance.Info($"Subscribing to events for user identifier {UserIdentifier}");
-                MQTTClient.SubscribeAsync(new TopicFilterBuilder().WithTopic($"{UserIdentifier}/event").Build());
+                MQTTClient.SubscribeAsync(new TopicFilterBuilder().WithTopic(
+                    string.IsNullOrWhiteSpace(TopicPrefix) ? $"{UserIdentifier}/event" : $"{TopicPrefix}/{UserIdentifier}/event"
+                    ).Build());
                 State = MQTTMessageState.Listening;
             }
             else if (e.Topic.StartsWith(UserIdentifier))
